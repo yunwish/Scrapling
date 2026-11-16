@@ -26,6 +26,7 @@ from patchright.async_api import Error as PatchrightError
 
 from scrapling import Selector, __version__
 from scrapling.core.utils import log
+from scrapling.core.url_safety import ensure_safe_url
 from ._browser_actions import (
     BrowserAction,
     NonEmptyString,
@@ -686,6 +687,7 @@ class ScraplingMCPServer:
         ] = True,
     ) -> ResponseModel:
         """Make an HTTP request without JavaScript. Suitable for low-to-mid protection."""
+        ensure_safe_url(url)
         normalized_proxy_auth = _normalize_credentials(proxy_auth)
         normalized_auth = _normalize_credentials(auth)
 
@@ -790,6 +792,7 @@ class ScraplingMCPServer:
         pierce_shadow: Annotated[bool, Field(description="Include open Shadow DOM content.")] = False,
     ) -> ResponseModel:
         """Fetch a page with a stealth browser and JavaScript rendering."""
+        ensure_safe_url(url)
         async with AsyncStealthySession(
             wait=wait,
             proxy=proxy,
@@ -873,6 +876,7 @@ class ScraplingMCPServer:
         ] = False,
     ) -> ResponseModel:
         """Fetch a URL in an open stealthy browser session. Options apply only to this request."""
+        ensure_safe_url(url)
         entry = self._get_session(session_id, expected_type=["stealthy"])
         fetch_params = dict(
             wait=wait,
@@ -939,6 +943,7 @@ class ScraplingMCPServer:
         ] = True,
     ) -> ResponseModel:
         """Make an HTTP request using the session's cookies, connections, impersonation, and proxy. Options apply to this request."""
+        ensure_safe_url(url)
         entry = self._get_session(session_id, expected_type=["static"])
 
         request_kwargs: Dict[str, Any] = dict(

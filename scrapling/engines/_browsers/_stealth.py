@@ -9,6 +9,11 @@ from patchright.sync_api import sync_playwright
 from patchright.async_api import async_playwright
 
 from scrapling.core.utils import log
+from scrapling.core.url_safety import (
+    CloudflareChallengeNotSolved,
+    ensure_safe_url,
+    verify_cloudflare_solved,
+)
 from scrapling.core._types import Any, List, Optional, ProxyType, Unpack
 from scrapling.engines.toolbelt.proxy_rotation import is_proxy_error
 from scrapling.engines.toolbelt.convertor import Response, ResponseFactory
@@ -251,6 +256,7 @@ class StealthySession(SyncSession, StealthySessionMixin):
         :param proxy: Static proxy to override rotator and session proxy. A new browser context will be created and used with it.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         static_proxy = kwargs.pop("proxy", None)
 
         params = _validate(kwargs, self, StealthConfig)
@@ -294,6 +300,10 @@ class StealthySession(SyncSession, StealthySessionMixin):
                             self._cloudflare_solver(page)
                             # Make sure the page is fully loaded after the captcha
                             self._wait_for_page_stability(page, params.load_dom, params.network_idle)
+                            verify_cloudflare_solved(
+                                ResponseFactory._get_page_content(page),
+                                (final_response[0] or first_response).status,
+                            )
 
                         if params.page_action:
                             try:
@@ -573,6 +583,7 @@ class AsyncStealthySession(AsyncSession, StealthySessionMixin):
         :param proxy: Static proxy to override rotator and session proxy. A new browser context will be created and used with it.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         static_proxy = kwargs.pop("proxy", None)
 
         params = _validate(kwargs, self, StealthConfig)
@@ -617,6 +628,10 @@ class AsyncStealthySession(AsyncSession, StealthySessionMixin):
                             await self._cloudflare_solver(page)
                             # Make sure the page is fully loaded after the captcha
                             await self._wait_for_page_stability(page, params.load_dom, params.network_idle)
+                            verify_cloudflare_solved(
+                                await ResponseFactory._get_async_page_content(page),
+                                (final_response[0] or first_response).status,
+                            )
 
                         if params.page_action:
                             try:

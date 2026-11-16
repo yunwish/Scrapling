@@ -1,4 +1,5 @@
 from scrapling.core._types import Unpack
+from scrapling.core.url_safety import ensure_safe_url
 from scrapling.engines._browsers._types import StealthSession
 from scrapling.engines.toolbelt.custom import BaseFetcher, Response
 from scrapling.engines._browsers._stealth import StealthySession, AsyncStealthySession
@@ -52,6 +53,7 @@ class StealthyFetcher(BaseFetcher):
         :param additional_args: Additional arguments to be passed to Playwright's context as additional settings, and it takes higher priority than Scrapling's settings.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         selector_config = kwargs.get("selector_config", {}) or kwargs.get(
             "custom_config", {}
         )  # Checking `custom_config` for backward compatibility
@@ -105,6 +107,7 @@ class StealthyFetcher(BaseFetcher):
         :param additional_args: Additional arguments to be passed to Playwright's context as additional settings, and it takes higher priority than Scrapling's settings.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         selector_config = kwargs.get("selector_config", {}) or kwargs.get(
             "custom_config", {}
         )  # Checking `custom_config` for backward compatibility

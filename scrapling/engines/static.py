@@ -13,6 +13,7 @@ from curl_cffi.requests import (
 )
 
 from scrapling.core.utils import log
+from scrapling.core.url_safety import ensure_safe_url
 from scrapling.core._types import (
     Any,
     Dict,
@@ -242,6 +243,7 @@ class _SyncSessionLogic(_ConfigurationLogic):
         """
         Perform an HTTP request using the configured session.
         """
+        ensure_safe_url(kwargs.get("url", ""))
         stealth = self._stealth if stealth is None else stealth
 
         selector_config = self._get_param(kwargs, "selector_config", self.selector_config) or self.selector_config
@@ -322,6 +324,7 @@ class _SyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("GET", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -354,6 +357,7 @@ class _SyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("POST", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -386,6 +390,7 @@ class _SyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("PUT", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -420,6 +425,7 @@ class _SyncSessionLogic(_ConfigurationLogic):
         """
         # Careful of sending a body in a DELETE request, it might cause some websites to reject the request as per https://www.rfc-editor.org/rfc/rfc7231#section-4.3.5,
         # But some websites accept it, it depends on the implementation used.
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("DELETE", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -458,6 +464,7 @@ class _ASyncSessionLogic(_ConfigurationLogic):
         """
         Perform an HTTP request using the configured session.
         """
+        ensure_safe_url(kwargs.get("url", ""))
         stealth = self._stealth if stealth is None else stealth
 
         selector_config = self._get_param(kwargs, "selector_config", self.selector_config) or self.selector_config
@@ -541,6 +548,7 @@ class _ASyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("GET", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -573,6 +581,7 @@ class _ASyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("POST", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -605,6 +614,7 @@ class _ASyncSessionLogic(_ConfigurationLogic):
             - stealthy_headers: If enabled (default), it creates and adds real browser headers.
         :return: A `Response` object.
         """
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("PUT", stealth=stealthy_headers, url=url, **kwargs)
 
@@ -639,6 +649,7 @@ class _ASyncSessionLogic(_ConfigurationLogic):
         """
         # Careful of sending a body in a DELETE request, it might cause some websites to reject the request as per https://www.rfc-editor.org/rfc/rfc7231#section-4.3.5,
         # But some websites accept it, it depends on the implementation used.
+        ensure_safe_url(url)
         stealthy_headers = kwargs.pop("stealthy_headers", None)
         return self._make_request("DELETE", stealth=stealthy_headers, url=url, **kwargs)
 
